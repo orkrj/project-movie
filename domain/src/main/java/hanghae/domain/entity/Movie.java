@@ -3,8 +3,7 @@ package hanghae.domain.entity;
 import hanghae.domain.type.AgeRating;
 import hanghae.domain.type.Genre;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -13,6 +12,8 @@ import java.util.List;
 @Entity
 @Table(name = "movies")
 @NoArgsConstructor
+@AllArgsConstructor
+@Getter @Builder
 public class Movie extends Base{
 
     @Id
@@ -33,6 +34,7 @@ public class Movie extends Base{
     @Enumerated(EnumType.STRING)
     private Genre genre;
 
+    @Setter
     @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Schedule> schedules = new ArrayList<>();
 }

@@ -2,7 +2,9 @@ package hanghae.api;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 
+@EntityScan(basePackages = "hanghae.domain.entity")
 @SpringBootApplication(
         scanBasePackages = {
                 "hanghae.api",

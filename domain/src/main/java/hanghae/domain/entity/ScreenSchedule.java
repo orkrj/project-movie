@@ -19,4 +19,9 @@ public class ScreenSchedule {
     @ManyToOne
     @JoinColumn(name = "schedule_id")
     private Schedule schedule;
+
+    public ScreenSchedule(Screen screen, Schedule schedule) {
+        this.screen = screen;
+        this.schedule = schedule;
+    }
 }

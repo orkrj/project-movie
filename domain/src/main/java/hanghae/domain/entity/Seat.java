@@ -2,6 +2,7 @@ package hanghae.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(
@@ -20,4 +21,9 @@ public class Seat {
     @ManyToOne
     @JoinColumn(name = "screen_id")
     private Screen screen;
+
+    public void setSeatNameAndScreen(String seatName, Screen screen) {
+        this.seatName = seatName;
+        this.screen = screen;
+    }
 }

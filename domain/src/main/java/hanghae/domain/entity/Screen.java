@@ -2,6 +2,7 @@ package hanghae.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +16,7 @@ public class Screen extends Base {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long screenId;
 
+    @Setter
     private String screenName;
 
     @OneToMany(mappedBy = "screen", cascade = CascadeType.ALL, orphanRemoval = true)
