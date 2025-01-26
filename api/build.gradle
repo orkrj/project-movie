@@ -2,3 +2,7 @@ bootJar {
     enabled = true
     mainClass = 'hanghae.api.ApiApplication'
 }
+
+dependencies {
+    implementation project(':infrastructure')
+}

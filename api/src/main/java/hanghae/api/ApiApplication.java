@@ -5,7 +5,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication(
         scanBasePackages = {
-                "hanghae.common",
                 "hanghae.api",
                 "hanghae.application",
                 "hanghae.domain",
