@@ -9,7 +9,13 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Entity
-@Table(name = "movies")
+@Table(
+        name = "movies",
+        indexes = {
+                @Index(name = "idx_release_date", columnList = "release_date"),
+                @Index(name = "idx_title_genre", columnList = "title, genre")
+        }
+)
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter @Builder
