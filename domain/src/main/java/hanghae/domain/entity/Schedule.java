@@ -1,12 +1,13 @@
 package hanghae.domain.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "schedules")
@@ -17,16 +18,19 @@ public class Schedule extends Base {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long scheduleId;
 
+    @Getter
     @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<ScreenSchedule> screenSchedules = new ArrayList<>();
+    private Set<ScreenSchedule> screenSchedules = new HashSet<>();
 
     @Setter
     @ManyToOne
     @JoinColumn(name = "movie_id")
     private Movie movie;
 
+    @Getter
     private LocalDateTime startDateTime;
 
+    @Getter
     private LocalDateTime endDateTime;
 
     public void setStartDateTimeAndEndDateTime(
