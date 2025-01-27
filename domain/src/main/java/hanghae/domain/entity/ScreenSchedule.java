@@ -1,6 +1,7 @@
 package hanghae.domain.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
@@ -12,6 +13,7 @@ public class ScreenSchedule {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long screenScheduleId;
 
+    @Getter
     @ManyToOne
     @JoinColumn(name = "screen_id")
     private Screen screen;
