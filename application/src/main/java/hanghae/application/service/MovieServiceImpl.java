@@ -2,10 +2,11 @@ package hanghae.application.service;
 
 import hanghae.application.dto.MoviePlayingResponse;
 import hanghae.application.port.MovieService;
-import hanghae.domain.entity.Movie;
 import hanghae.domain.port.MovieRepository;
+import hanghae.domain.port.MovieScheduleScreenDto;
 import hanghae.domain.type.Genre;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -18,12 +19,16 @@ public class MovieServiceImpl implements MovieService {
     private final MovieRepository movieRepository;
 
     @Override
+    @Cacheable(
+            cacheNames = "findMoviesPlaying",
+            key = "'findMoviesPlaying' + (#title ?: '') + ':' + (#genre ?: '')"
+    )
     public List<MoviePlayingResponse> findMoviesPlayingWithFilters(String title, Genre genre) {
-        List<Movie> movies =
+        List<MovieScheduleScreenDto> movieScheduleScreenDtoList =
                 movieRepository.findMoviesPlayingWithFilters(LocalDate.now(), title, genre);
 
-        return movies.stream()
-                .map(MoviePlayingResponse::of)
+        return movieScheduleScreenDtoList.stream()
+                .map(MoviePlayingResponse::from)
                 .toList();
     }
 }

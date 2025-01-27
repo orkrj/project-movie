@@ -1,9 +1,14 @@
 package hanghae.infrastructure.adapter;
 
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import hanghae.domain.entity.*;
+import hanghae.domain.entity.QMovie;
+import hanghae.domain.entity.QSchedule;
+import hanghae.domain.entity.QScreen;
+import hanghae.domain.entity.QScreenSchedule;
 import hanghae.domain.port.MovieRepository;
+import hanghae.domain.port.MovieScheduleScreenDto;
 import hanghae.domain.type.Genre;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -18,7 +23,7 @@ public class JpaMovieRepositoryAdapter implements MovieRepository {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<Movie> findMoviesPlayingWithFilters(
+    public List<MovieScheduleScreenDto> findMoviesPlayingWithFilters(
             LocalDate now,
             String title,
             Genre genre
@@ -35,7 +40,7 @@ public class JpaMovieRepositoryAdapter implements MovieRepository {
                 .and(movie.deletedAt.isNull());
 
         if (title != null && !title.trim().isEmpty()) {
-            builder.and(movie.title.startsWith(title));
+            builder.and(movie.title.contains(title));
         }
 
         if (genre != null) {
@@ -43,11 +48,27 @@ public class JpaMovieRepositoryAdapter implements MovieRepository {
         }
 
         return queryFactory
-                .selectDistinct(movie)
+                .select(
+                        Projections.constructor(
+                                MovieScheduleScreenDto.class,
+                                movie.movieId,
+                                movie.title,
+                                movie.ageRating,
+                                movie.releaseDate,
+                                movie.thumbnailUrl,
+                                movie.runningTime,
+                                movie.genre,
+                                schedule.scheduleId,
+                                schedule.startDateTime,
+                                schedule.endDateTime,
+                                screen.screenId,
+                                screen.screenName
+                        )
+                )
                 .from(movie)
-                .leftJoin(movie.schedules, schedule).fetchJoin()
-                .leftJoin(schedule.screenSchedules, screenSchedule).fetchJoin()
-                .leftJoin(screenSchedule.screen, screen).fetchJoin()
+                .leftJoin(movie.schedules, schedule)
+                .leftJoin(schedule.screenSchedules, screenSchedule)
+                .leftJoin(screenSchedule.screen, screen)
                 .where(builder)
                 .orderBy(
                         movie.releaseDate.desc(),

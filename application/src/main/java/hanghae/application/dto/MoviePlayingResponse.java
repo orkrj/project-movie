@@ -6,45 +6,29 @@ import hanghae.application.dto.common.ScreenResponse;
 import hanghae.domain.entity.Movie;
 import hanghae.domain.entity.Schedule;
 import hanghae.domain.entity.Screen;
+import hanghae.domain.port.MovieScheduleScreenDto;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public record MoviePlayingResponse(
-        MovieResponse movieResponse,
-        Set<ScreenScheduleResponse> screenScheduleResponses
-) {
+@Getter
+@Builder
+public class MoviePlayingResponse {
+    private MovieResponse movieResponse;
+    private ScheduleResponse scheduleResponse;
+    private ScreenResponse screenResponse;
 
-    public static MoviePlayingResponse of(Movie movie) {
-
-        MovieResponse movieResponse = MovieResponse.from(movie);
-        
-        Set<ScreenScheduleResponse> screenScheduleResponses = new HashSet<>();
-
-        List<Schedule> schedules = movie.getSchedules();
-        for (Schedule schedule : schedules) {
-            schedule.getScreenSchedules().stream()
-                    .map(screenSchedule 
-                            -> ScreenScheduleResponse.of(screenSchedule.getScreen(), schedule)
-                    )
-                    .forEach(screenScheduleResponses::add);
-        }
-
-        return new MoviePlayingResponse(movieResponse, screenScheduleResponses);
-    }
-
-    record ScreenScheduleResponse(
-            ScreenResponse screenResponse,
-            ScheduleResponse scheduleResponse
-    ) {
-
-        public static ScreenScheduleResponse of(Screen screen, Schedule schedule) {
-            return new ScreenScheduleResponse(
-                    ScreenResponse.from(screen),
-                    ScheduleResponse.from(schedule)
-            );
-        }
+    public static MoviePlayingResponse from(MovieScheduleScreenDto dto) {
+        return MoviePlayingResponse.builder()
+                .movieResponse(MovieResponse.of(dto))
+                .scheduleResponse(ScheduleResponse.of(dto))
+                .screenResponse(ScreenResponse.of(dto))
+                .build();
     }
 }
 

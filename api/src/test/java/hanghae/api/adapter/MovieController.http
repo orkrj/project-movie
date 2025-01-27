@@ -7,5 +7,5 @@ GET http://localhost:8081/api/v1/movie?title=5
 ### 현재 상영 중인 영화 중 장가에 애니메이션인 영화 조회
 GET http://localhost:8081/api/v1/movie?genre=ANIMATION
 
-### 현재 상영 중인 영화 중 제목에 10이 들어가고, 장르가 SF인 영화 조회
-GET http://localhost:8081/api/v1/movie?title=1&genre=SF
+### 현재 상영 중인 영화 중 제목에 3 들어가고, 장르가 SF인 영화 조회
+GET http://localhost:8081/api/v1/movie?title=3&genre=SF

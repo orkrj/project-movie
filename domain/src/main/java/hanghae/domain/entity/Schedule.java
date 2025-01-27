@@ -19,7 +19,11 @@ public class Schedule extends Base {
     private Long scheduleId;
 
     @Getter
-    @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(
+            mappedBy = "schedule",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
     private Set<ScreenSchedule> screenSchedules = new HashSet<>();
 
     @Setter

@@ -1,6 +1,7 @@
 package hanghae.application.dto.common;
 
 import hanghae.domain.entity.Movie;
+import hanghae.domain.port.MovieScheduleScreenDto;
 import hanghae.domain.type.AgeRating;
 import hanghae.domain.type.Genre;
 
@@ -14,6 +15,17 @@ public record MovieResponse(
         int runningTime,
         Genre genre
 ) {
+
+    public static MovieResponse of(MovieScheduleScreenDto movieScheduleScreenDto) {
+        return new MovieResponse(
+                movieScheduleScreenDto.movieTitle(),
+                movieScheduleScreenDto.ageRating(),
+                movieScheduleScreenDto.releaseDate(),
+                movieScheduleScreenDto.thumbnailUrl(),
+                movieScheduleScreenDto.runningTime(),
+                movieScheduleScreenDto.genre()
+        );
+    }
 
     public static MovieResponse from(Movie movie) {
         return new MovieResponse(

@@ -9,7 +9,7 @@ import java.util.List;
 
 @Repository
 public interface MovieRepository {
-    List<Movie> findMoviesPlayingWithFilters(
+    List<MovieScheduleScreenDto> findMoviesPlayingWithFilters(
             LocalDate now,
             String title,
             Genre genre

@@ -34,6 +34,10 @@ public class Movie extends Base{
     private Genre genre;
 
     @Setter
-    @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(
+            mappedBy = "movie",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
     private List<Schedule> schedules;
 }
