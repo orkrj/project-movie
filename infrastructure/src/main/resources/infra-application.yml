@@ -1,5 +1,10 @@
 spring:
 
+  data:
+    redis:
+      host: redis-cache
+      port: 6379
+
   datasource:
     url: jdbc:mysql://mysql-db:3306/movie_app
     username: master
