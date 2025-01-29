@@ -1,6 +1,6 @@
 package hanghae.application.port;
 
-import hanghae.application.dto.MoviePlayingResponse;
+import hanghae.application.dto.response.MoviePlayingResponse;
 import hanghae.domain.type.Genre;
 
 import java.util.List;

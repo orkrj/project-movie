@@ -1,6 +1,6 @@
 package hanghae.application.service;
 
-import hanghae.application.dto.MoviePlayingResponse;
+import hanghae.application.dto.response.MoviePlayingResponse;
 import hanghae.application.port.MovieService;
 import hanghae.domain.port.MovieRepository;
 import hanghae.domain.port.MovieScheduleScreenDto;
