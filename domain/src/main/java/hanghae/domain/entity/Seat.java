@@ -1,8 +1,7 @@
 package hanghae.domain.entity;
 
 import jakarta.persistence.*;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @Table(
@@ -16,6 +15,7 @@ public class Seat {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long seatId;
 
+    @Getter
     private String seatName;
 
     @ManyToOne
