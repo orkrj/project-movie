@@ -18,6 +18,7 @@
 //@RequiredArgsConstructor
 //public class DummyDataInitializer implements ApplicationRunner {
 //
+//    private final JpaMemberRepository memberRepository;
 //    private final JpaMovieRepository movieRepository;
 //    private final JpaScheduleRepository scheduleRepository;
 //    private final JpaScreenRepository screenRepository;
@@ -29,11 +30,21 @@
 //    @Override
 //    @Transactional
 //    public void run(ApplicationArguments args) throws Exception {
+//        createMembers(10);
 //        List<Screen> allScreens = createScreensAndSeats(50);
 //        List<Movie> allMovies = createMovies(500);
 //        List<Schedule> allSchedules = createSchedules(10000, allMovies);
 //
 //        createScreenSchedules(allSchedules, allScreens);
+//    }
+//
+//    private void createMembers(int memberCount) {
+//        for (int i = 1; i <= memberCount; i++) {
+//            Member member = new Member();
+//            member.setMemberName("Member" + i);
+//
+//            memberRepository.save(member);
+//        }
 //    }
 //
 //    private List<Screen> createScreensAndSeats(int screenCount) {
