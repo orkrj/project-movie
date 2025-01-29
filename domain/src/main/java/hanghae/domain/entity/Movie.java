@@ -16,34 +16,36 @@ import java.util.List;
                 @Index(name = "idx_title_genre", columnList = "title, genre")
         }
 )
-@NoArgsConstructor
+
+        @NoArgsConstructor
 @AllArgsConstructor
-@Getter @Builder
-public class Movie extends Base{
+        @Getter
+@Builder
+        public class Movie extends Base{
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long movieId;
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        private Long movieId;
 
-    private String title;
+        private String title;
 
-    @Enumerated(EnumType.STRING)
-    private AgeRating ageRating;
+        @Enumerated(EnumType.STRING)
+        private AgeRating ageRating;
 
-    private LocalDate releaseDate;
+        private LocalDate releaseDate;
 
-    private String thumbnailUrl;
+        private String thumbnailUrl;
 
-    private int runningTime;
+        private int runningTime;
 
-    @Enumerated(EnumType.STRING)
-    private Genre genre;
+        @Enumerated(EnumType.STRING)
+        private Genre genre;
 
-    @Setter
-    @OneToMany(
-            mappedBy = "movie",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
-    private List<Schedule> schedules;
+        @Setter
+        @OneToMany(
+        mappedBy = "movie",
+        cascade = CascadeType.ALL,
+        orphanRemoval = true
+)
+private List<Schedule> schedules;
 }
