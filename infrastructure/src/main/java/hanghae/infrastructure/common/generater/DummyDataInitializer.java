@@ -24,17 +24,18 @@
 //    private final JpaScreenRepository screenRepository;
 //    private final JpaScreenScheduleRepository screenScheduleRepository;
 //    private final JpaSeatRepository seatRepository;
+//    private final JpaScheduleSeatRepository scheduleSeatRepository;
 //
 //    private final Random random = new Random();
 //
 //    @Override
-//    @Transactional
 //    public void run(ApplicationArguments args) throws Exception {
 //        createMembers(10);
 //        List<Screen> allScreens = createScreensAndSeats(50);
 //        List<Movie> allMovies = createMovies(500);
 //        List<Schedule> allSchedules = createSchedules(10000, allMovies);
 //
+//        createScheduleSeats(allSchedules);
 //        createScreenSchedules(allSchedules, allScreens);
 //    }
 //
@@ -129,6 +130,18 @@
 //        }
 //
 //        return schedules;
+//    }
+//
+//    private void createScheduleSeats(List<Schedule> schedules) {
+//        List<Seat> seats = seatRepository.findAll();
+//
+//        for (Schedule schedule : schedules) {
+//            for (Seat seat : seats) {
+//                ScheduleSeat scheduleSeat = new ScheduleSeat(schedule, seat);
+//
+//                scheduleSeatRepository.save(scheduleSeat);
+//            }
+//        }
 //    }
 //
 //    private void createScreenSchedules(List<Schedule> allSchedules, List<Screen> allScreens) {

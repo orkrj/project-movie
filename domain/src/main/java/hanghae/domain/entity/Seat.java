@@ -3,6 +3,7 @@ package hanghae.domain.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+@Getter
 @Entity
 @Table(
         name = "seats",
@@ -15,7 +16,6 @@ public class Seat {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long seatId;
 
-    @Getter
     private String seatName;
 
     @ManyToOne

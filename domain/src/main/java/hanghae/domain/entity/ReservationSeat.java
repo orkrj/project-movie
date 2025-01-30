@@ -1,9 +1,9 @@
 package hanghae.domain.entity;
 
+import hanghae.domain.type.ReservationSeatId;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import static jakarta.persistence.FetchType.*;
 
@@ -12,21 +12,17 @@ import static jakarta.persistence.FetchType.*;
 @NoArgsConstructor
 public class ReservationSeat {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long reservationSeatId;
+    @EmbeddedId
+    private ReservationSeatId reservationSeatId = new ReservationSeatId();
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "reservation_id")
+    @MapsId("reservationId")
     private Reservation reservation;
 
     @Getter
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "seat_id")
+    @MapsId("seatId")
     private Seat seat;
-
-    @Getter @Setter
-    private boolean isReserved;
 
     public static ReservationSeat of(Reservation reservation, Seat seat) {
         ReservationSeat reservationSeat = new ReservationSeat();
