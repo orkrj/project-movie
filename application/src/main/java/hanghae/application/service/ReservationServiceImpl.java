@@ -2,10 +2,7 @@ package hanghae.application.service;
 
 import hanghae.application.dto.request.ReservationRequest;
 import hanghae.application.dto.response.ReservationResponse;
-import hanghae.application.port.MemberService;
-import hanghae.application.port.ReservationService;
-import hanghae.application.port.ScheduleService;
-import hanghae.application.port.SeatService;
+import hanghae.application.port.*;
 import hanghae.domain.entity.*;
 import hanghae.domain.port.ReservationRepository;
 import jakarta.transaction.Transactional;
@@ -22,6 +19,8 @@ public class ReservationServiceImpl implements ReservationService {
     private final MemberService memberService;
     private final ScheduleService scheduleService;
     private final SeatService seatService;
+    private final ScheduleSeatService scheduleSeatService;
+
     private final ReservationRepository reservationRepository;
 
     @Override
@@ -29,13 +28,15 @@ public class ReservationServiceImpl implements ReservationService {
     public ReservationResponse reserveSeat(ReservationRequest request) {
         Reservation reservation = initReservation(request);
         List<Seat> seats = getSeats(request);
-        List<ReservationSeat> reservationSeats = toReservationSeats(reservation, seats);
 
-        checkDoubleBooking(request);
+        List<ScheduleSeat> scheduleSeats = getScheduleSeats(request, seats);
+        checkDoubleBooking(scheduleSeats);
+
+        List<ReservationSeat> reservationSeats = toReservationSeats(reservation, seats);
         checkReservationPolicy(reservation, reservationSeats, 5);
 
         reservation.setReservationSeats(reservationSeats);
-        reservationSeats.forEach(reservationSeat -> reservationSeat.setReserved(true));
+        scheduleSeats.forEach(scheduleSeat -> scheduleSeat.setReserved(true));
 
         return ReservationResponse.from(reservationRepository.reserve(reservation));
     }
@@ -54,29 +55,22 @@ public class ReservationServiceImpl implements ReservationService {
                 .toList();
     }
 
+    private List<ScheduleSeat> getScheduleSeats(ReservationRequest request, List<Seat> seats) {
+        return seats.stream()
+                .map(seat -> scheduleSeatService.findScheduleSeatByIds(request.scheduleId(), seat.getSeatId()))
+                .toList();
+    }
+
     private List<ReservationSeat> toReservationSeats(Reservation reservation, List<Seat> seats) {
         return seats.stream()
                 .map(seat -> ReservationSeat.of(reservation, seat))
                 .toList();
     }
 
-    private void checkDoubleBooking(ReservationRequest request) {
-        List<Reservation> reservations = reservationRepository.findReservationByScheduleId(request.scheduleId())
-                .orElse(new ArrayList<>());
-
-        if (reservations.isEmpty()) {
-            return;
-        }
-
-        if (isReserved(reservations)) {
+    private void checkDoubleBooking(List<ScheduleSeat> scheduleSeats) {
+        if (scheduleSeats.stream().anyMatch(ScheduleSeat::isReserved)) {
             throw new IllegalArgumentException("이미 예매된 좌석입니다.");
         }
-    }
-
-    private boolean isReserved(List<Reservation> reservations) {
-        return reservations.stream()
-                .flatMap(reservation -> reservation.getReservationSeats().stream())
-                .anyMatch(ReservationSeat::isReserved);
     }
 
     private void checkReservationPolicy(Reservation reservation, List<ReservationSeat> reservationSeats, int limit) {
