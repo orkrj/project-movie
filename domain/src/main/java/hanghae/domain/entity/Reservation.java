@@ -42,15 +42,12 @@ public class Reservation extends Base {
     )
     private List<ReservationSeat> reservationSeats;
 
-    @Version
-    private Long version;
 
     public static Reservation of(Member member, Schedule schedule) {
         Reservation reservation = new Reservation();
         reservation.member = member;
         reservation.schedule = schedule;
         reservation.reservationSeats = new ArrayList<>();
-        reservation.version = 1L;
 
         return reservation;
     }

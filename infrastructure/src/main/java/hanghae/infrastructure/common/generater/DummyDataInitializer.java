@@ -29,11 +29,12 @@
 //    private final Random random = new Random();
 //
 //    @Override
+//    @Transactional
 //    public void run(ApplicationArguments args) throws Exception {
 //        createMembers(10);
 //        List<Screen> allScreens = createScreensAndSeats(50);
-//        List<Movie> allMovies = createMovies(500);
-//        List<Schedule> allSchedules = createSchedules(10000, allMovies);
+//        List<Movie> allMovies = createMovies(100);
+//        List<Schedule> allSchedules = createSchedules(500, allMovies);
 //
 //        createScheduleSeats(allSchedules);
 //        createScreenSchedules(allSchedules, allScreens);
@@ -107,6 +108,7 @@
 //    }
 //
 //    private List<Schedule> createSchedules(int scheduleCount, List<Movie> allMovies) {
+//        List<Seat> seats = seatRepository.findAll();
 //        List<Schedule> schedules = new ArrayList<>();
 //        int movieSize = allMovies.size();
 //

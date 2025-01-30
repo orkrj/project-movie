@@ -27,6 +27,10 @@ public class ScheduleSeat {
     @Getter @Setter
     private boolean reserved;
 
+    @Version
+    @Column(nullable = false)
+    private Long version;
+
     public ScheduleSeat(Schedule schedule, Seat seat) {
         this.schedule = schedule;
         this.seat = seat;

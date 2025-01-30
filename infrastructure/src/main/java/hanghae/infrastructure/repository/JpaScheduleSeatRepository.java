@@ -19,6 +19,17 @@ public interface JpaScheduleSeatRepository extends JpaRepository<ScheduleSeat, S
             "where ss.schedule.scheduleId = :scheduleId " +
             "and ss.seat.seatId = :seatId"
     )
+    Optional<ScheduleSeat> findScheduleSeatByScheduleIdAndSeatIdWithPessimisticLock(
+            @Param("scheduleId") Long scheduleId,
+            @Param("seatId") Long seatId);
+
+    // 낙관적 락 적용
+    @Lock(LockModeType.OPTIMISTIC)
+    @Query(
+            "select ss from ScheduleSeat ss " +
+                    "where ss.schedule.scheduleId = :scheduleId " +
+                    "and ss.seat.seatId = :seatId"
+    )
     Optional<ScheduleSeat> findScheduleSeatByScheduleIdAndSeatId(
             @Param("scheduleId") Long scheduleId,
             @Param("seatId") Long seatId);
