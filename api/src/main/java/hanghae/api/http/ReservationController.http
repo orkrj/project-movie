@@ -1,4 +1,4 @@
-###
+### 성공
 POST http://localhost:8081/api/v1/reservation
 Content-Type: application/json
 
@@ -8,7 +8,7 @@ Content-Type: application/json
   "seatNames": ["A1", "A2", "A3"]
 }
 
-###
+### 하나의 상영에 대해 한 사람당 최대 5개의 좌석만 예매 가능합니다.
 POST http://localhost:8081/api/v1/reservation
 Content-Type: application/json
 
@@ -19,7 +19,7 @@ Content-Type: application/json
 }
 
 
-###
+### 성공
 POST http://localhost:8081/api/v1/reservation
 Content-Type: application/json
 
@@ -29,7 +29,7 @@ Content-Type: application/json
   "seatNames": ["A1"]
 }
 
-###
+### 성공
 POST http://localhost:8081/api/v1/reservation
 Content-Type: application/json
 
@@ -39,7 +39,7 @@ Content-Type: application/json
   "seatNames": ["A2"]
 }
 
-###
+### 하나의 상영에 대해 최대 2개까지 예약할 수 있습니다.
 POST http://localhost:8081/api/v1/reservation
 Content-Type: application/json
 
@@ -49,7 +49,7 @@ Content-Type: application/json
   "seatNames": ["A3"]
 }
 
-###
+### 하나의 상영에 대해 5개의 표를 예매하는 경우 좌석은 붙어있어야 합니다.
 POST http://localhost:8081/api/v1/reservation
 Content-Type: application/json
 
@@ -59,7 +59,7 @@ Content-Type: application/json
   "seatNames": ["A1", "B1", "C1", "D1", "E1"]
 }
 
-###
+### 성공
 POST http://localhost:8081/api/v1/reservation
 Content-Type: application/json
 
@@ -69,7 +69,7 @@ Content-Type: application/json
   "seatNames": ["A1"]
 }
 
-###
+### 이미 예매된 좌석입니다.
 POST http://localhost:8081/api/v1/reservation
 Content-Type: application/json
 

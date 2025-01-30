@@ -51,7 +51,7 @@ public class ReservationServiceImpl implements ReservationService {
     private List<Seat> getSeats(ReservationRequest request) {
         return request.seatNames()
                 .stream()
-                .map(seatName -> seatService.findSeatBySeatNameAndScreenId(seatName, request.scheduleId()))
+                .map(seatName -> seatService.findSeatBySeatNameAndScreenId(seatName, request.screenId()))
                 .toList();
     }
 

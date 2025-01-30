@@ -2,7 +2,6 @@ package hanghae.api.adapter;
 
 import hanghae.application.dto.request.ReservationRequest;
 import hanghae.application.dto.response.ReservationResponse;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.client.RestClient;
 
@@ -10,15 +9,14 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@Slf4j
 class ReservationControllerTest {
 
     RestClient restClient = RestClient.create("http://localhost:8081");
 
-    @Test
+    // @Test
     void reserveSeatTest() {
         ReservationResponse response =
-                reserve(new ReservationRequest(5L, 30L, List.of("B1", "B2", "B3")));
+                reserve(new ReservationRequest(5L, 5L, 30L, List.of("B1", "B2", "B3")));
         System.out.println("Reservation response: " + response);
     }
 
