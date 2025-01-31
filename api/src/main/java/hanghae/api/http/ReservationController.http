@@ -4,6 +4,7 @@ Content-Type: application/json
 
 {
   "memberId": 1,
+  "screenId": 10,
   "scheduleId": 10,
   "seatNames": ["A1", "A2", "A3"]
 }
@@ -14,6 +15,7 @@ Content-Type: application/json
 
 {
 "memberId": 2,
+"screenId": 10,
 "scheduleId": 20,
 "seatNames": ["A1", "A2", "A3", "B1", "B2", "B3"]
 }
@@ -25,6 +27,7 @@ Content-Type: application/json
 
 {
   "memberId": 3,
+  "screenId": 10,
   "scheduleId": 30,
   "seatNames": ["A1"]
 }
@@ -35,6 +38,7 @@ Content-Type: application/json
 
 {
   "memberId": 3,
+  "screenId": 10,
   "scheduleId": 30,
   "seatNames": ["A2"]
 }
@@ -45,6 +49,7 @@ Content-Type: application/json
 
 {
   "memberId": 3,
+  "screenId": 10,
   "scheduleId": 30,
   "seatNames": ["A3"]
 }
@@ -55,6 +60,7 @@ Content-Type: application/json
 
 {
   "memberId": 4,
+  "screenId": 10,
   "scheduleId": 40,
   "seatNames": ["A1", "B1", "C1", "D1", "E1"]
 }
@@ -65,6 +71,7 @@ Content-Type: application/json
 
 {
   "memberId": 5,
+  "screenId": 10,
   "scheduleId": 50,
   "seatNames": ["A1"]
 }
@@ -75,6 +82,7 @@ Content-Type: application/json
 
 {
   "memberId": 6,
+  "screenId": 10,
   "scheduleId": 50,
   "seatNames": ["A1"]
 }

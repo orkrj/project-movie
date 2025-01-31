@@ -27,6 +27,9 @@ public class Screen extends Base {
     )
     private List<ScreenSchedule> screenSchedules = new ArrayList<>();
 
-    @OneToMany(mappedBy = "screen", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(
+            mappedBy = "screen",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
     private List<Seat> seats = new ArrayList<>();
 }
