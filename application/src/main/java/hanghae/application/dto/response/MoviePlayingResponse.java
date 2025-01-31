@@ -1,20 +1,11 @@
-package hanghae.application.dto;
+package hanghae.application.dto.response;
 
 import hanghae.application.dto.common.MovieResponse;
 import hanghae.application.dto.common.ScheduleResponse;
 import hanghae.application.dto.common.ScreenResponse;
-import hanghae.domain.entity.Movie;
-import hanghae.domain.entity.Schedule;
-import hanghae.domain.entity.Screen;
 import hanghae.domain.port.MovieScheduleScreenDto;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 @Getter
 @Builder

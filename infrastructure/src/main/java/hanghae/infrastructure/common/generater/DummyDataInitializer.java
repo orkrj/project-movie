@@ -18,22 +18,35 @@
 //@RequiredArgsConstructor
 //public class DummyDataInitializer implements ApplicationRunner {
 //
+//    private final JpaMemberRepository memberRepository;
 //    private final JpaMovieRepository movieRepository;
 //    private final JpaScheduleRepository scheduleRepository;
 //    private final JpaScreenRepository screenRepository;
 //    private final JpaScreenScheduleRepository screenScheduleRepository;
 //    private final JpaSeatRepository seatRepository;
+//    private final JpaScheduleSeatRepository scheduleSeatRepository;
 //
 //    private final Random random = new Random();
 //
 //    @Override
 //    @Transactional
 //    public void run(ApplicationArguments args) throws Exception {
+//        createMembers(10);
 //        List<Screen> allScreens = createScreensAndSeats(50);
-//        List<Movie> allMovies = createMovies(500);
-//        List<Schedule> allSchedules = createSchedules(10000, allMovies);
+//        List<Movie> allMovies = createMovies(100);
+//        List<Schedule> allSchedules = createSchedules(500, allMovies);
 //
+//        createScheduleSeats(allSchedules);
 //        createScreenSchedules(allSchedules, allScreens);
+//    }
+//
+//    private void createMembers(int memberCount) {
+//        for (int i = 1; i <= memberCount; i++) {
+//            Member member = new Member();
+//            member.setMemberName("Member" + i);
+//
+//            memberRepository.save(member);
+//        }
 //    }
 //
 //    private List<Screen> createScreensAndSeats(int screenCount) {
@@ -95,6 +108,7 @@
 //    }
 //
 //    private List<Schedule> createSchedules(int scheduleCount, List<Movie> allMovies) {
+//        List<Seat> seats = seatRepository.findAll();
 //        List<Schedule> schedules = new ArrayList<>();
 //        int movieSize = allMovies.size();
 //
@@ -118,6 +132,18 @@
 //        }
 //
 //        return schedules;
+//    }
+//
+//    private void createScheduleSeats(List<Schedule> schedules) {
+//        List<Seat> seats = seatRepository.findAll();
+//
+//        for (Schedule schedule : schedules) {
+//            for (Seat seat : seats) {
+//                ScheduleSeat scheduleSeat = new ScheduleSeat(schedule, seat);
+//
+//                scheduleSeatRepository.save(scheduleSeat);
+//            }
+//        }
 //    }
 //
 //    private void createScreenSchedules(List<Schedule> allSchedules, List<Screen> allScreens) {

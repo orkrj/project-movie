@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
+@Getter
 @Entity
 @Table(name = "schedules")
 @NoArgsConstructor
@@ -18,7 +19,6 @@ public class Schedule extends Base {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long scheduleId;
 
-    @Getter
     @OneToMany(
             mappedBy = "schedule",
             cascade = CascadeType.ALL,
@@ -31,10 +31,8 @@ public class Schedule extends Base {
     @JoinColumn(name = "movie_id")
     private Movie movie;
 
-    @Getter
     private LocalDateTime startDateTime;
 
-    @Getter
     private LocalDateTime endDateTime;
 
     public void setStartDateTimeAndEndDateTime(
