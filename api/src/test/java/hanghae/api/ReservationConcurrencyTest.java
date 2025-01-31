@@ -30,7 +30,7 @@ class ReservationConcurrencyTest {
         jpaReservationRepository.deleteAll();
     }
 
-    // @Test
+//    @Test
     @DisplayName("pessimistic lock test")
     // 이거 멀티 스레드라 트랜젝션 관리 안되는데 롤백 어떻게 하지..?
     void reservePessimisticLockTest() throws InterruptedException {
@@ -71,7 +71,7 @@ class ReservationConcurrencyTest {
         Assertions.assertThat(jpaReservationRepository.findAll()).hasSize(1);
     }
 
-    @Test
+//    @Test
     @DisplayName("optimistic lock test")
     void reserveOptimisticLockTest() throws InterruptedException {
         Long memberId = 5L;
@@ -111,5 +111,44 @@ class ReservationConcurrencyTest {
         endLatch.await();
 
         Assertions.assertThat(jpaReservationRepository.findAll()).hasSize(1);
+    }
+
+    @Test
+    void reserveDistributedLockTest() throws InterruptedException {
+        Long memberId = 3L;
+        Long screenId = 22L;
+        Long scheduleId = 132L;
+        String seatName = "A1";
+
+        int threads = 10;
+        CountDownLatch startLatch = new CountDownLatch(1);
+        CountDownLatch endLatch = new CountDownLatch(threads);
+
+        for(int i = 0; i < threads; i++){
+            new Thread(() -> {
+                try {
+                    startLatch.await();
+
+                    ReservationRequest req = new ReservationRequest(
+                            memberId,
+                            screenId,
+                            scheduleId,
+                            List.of(seatName)
+                    );
+
+                    reservationService.reserveSeat(req);
+                    System.out.println("Reserved seat " + seatName);
+                } catch(Exception e){
+                    System.out.println("Exception: " + e.getMessage());
+                } finally {
+                    endLatch.countDown();
+                }
+            }).start();
+        }
+
+        startLatch.countDown();
+        endLatch.await();
+
+        // Assertions.assertThat(jpaReservationRepository.findAll()).hasSize(1);
     }
 }

@@ -5,6 +5,7 @@ import hanghae.application.dto.response.ReservationResponse;
 import hanghae.application.port.*;
 import hanghae.domain.entity.*;
 import hanghae.domain.port.ReservationRepository;
+import hanghae.infrastructure.common.annotation.DistributedLock;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,11 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     @Transactional
+    @DistributedLock(
+            key = "#{#request.scheduleId}",
+            waitTime = 1, // second
+            leaseTime = 2 // second
+    )
     public ReservationResponse reserveSeat(ReservationRequest request) {
         Reservation reservation = initReservation(request);
         List<Seat> seats = getSeats(request);
