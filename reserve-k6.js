@@ -3,14 +3,14 @@ import { check, sleep } from 'k6';
 
 export let options = {
     vus: 100,
-    duration: '10s',
+    duration: '600s',
 };
 
 export default function () {
     let payload = JSON.stringify({
-        memberId: 2,
-        screenId: 20,
-        scheduleId: 91,
+        memberId: 3,
+        screenId: 23,
+        scheduleId: 88,
         seatNames: ["A1", "A2"]
     });
 

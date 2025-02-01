@@ -21,8 +21,8 @@ public class DistributedLockAspect {
     @Around("@annotation(distributedLock)")
     public Object around(ProceedingJoinPoint point, DistributedLock distributedLock) throws Throwable {
         String key = distributedLock.key();
-        long waitTime = distributedLock.waitTime();
-        long leaseTime = distributedLock.leaseTime();
+        long waitTime = distributedLock.waitSeconds();
+        long leaseTime = distributedLock.leaseSeconds();
 
         RLock lock = redissonClient.getLock(key);
 
@@ -30,7 +30,9 @@ public class DistributedLockAspect {
             try {
                 return point.proceed();
             } finally {
-                lock.unlock();
+                if (lock.isHeldByCurrentThread()) {
+                    lock.unlock();
+                }
             }
         } else {
             throw new IllegalArgumentException("Failed to acquire lock: " + key);
