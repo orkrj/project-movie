@@ -21,8 +21,8 @@ public class DistributedLockAspect {
     @Around("@annotation(distributedLock)")
     public Object around(ProceedingJoinPoint point, DistributedLock distributedLock) throws Throwable {
         String key = distributedLock.key();
-        long waitTime = distributedLock.waitTime();
-        long leaseTime = distributedLock.leaseTime();
+        long waitTime = distributedLock.waitSeconds();
+        long leaseTime = distributedLock.leaseSeconds();
 
         RLock lock = redissonClient.getLock(key);
 

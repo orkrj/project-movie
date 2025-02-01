@@ -24,12 +24,14 @@ public class ReservationServiceImpl implements ReservationService {
 
     private final ReservationRepository reservationRepository;
 
+    public static final int MAX_SEATS_PER_RESERVATION = 5;
+
     @Override
     @Transactional
     @DistributedLock(
             key = "#{#request.scheduleId}",
-            waitTime = 1, // second
-            leaseTime = 2 // second
+            waitSeconds = 1,
+            leaseSeconds = 2
     )
     public ReservationResponse reserveSeat(ReservationRequest request) {
         Reservation reservation = initReservation(request);
@@ -39,7 +41,7 @@ public class ReservationServiceImpl implements ReservationService {
         checkDoubleBooking(scheduleSeats);
 
         List<ReservationSeat> reservationSeats = toReservationSeats(reservation, seats);
-        checkReservationPolicy(reservation, reservationSeats, 5);
+        checkReservationPolicy(reservation, reservationSeats, MAX_SEATS_PER_RESERVATION);
 
         reservation.setReservationSeats(reservationSeats);
         scheduleSeats.forEach(scheduleSeat -> scheduleSeat.setReserved(true));
@@ -74,9 +76,7 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     private void checkDoubleBooking(List<ScheduleSeat> scheduleSeats) {
-        if (scheduleSeats.stream().anyMatch(ScheduleSeat::isReserved)) {
-            throw new IllegalArgumentException("이미 예매된 좌석입니다.");
-        }
+        scheduleSeats.forEach(ScheduleSeat::checkDoubleBooking);
     }
 
     private void checkReservationPolicy(Reservation reservation, List<ReservationSeat> reservationSeats, int limit) {
