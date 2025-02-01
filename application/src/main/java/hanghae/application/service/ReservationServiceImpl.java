@@ -6,6 +6,7 @@ import hanghae.application.port.ReservationService;
 import hanghae.domain.entity.*;
 import hanghae.domain.port.*;
 import hanghae.infrastructure.common.annotation.DistributedLock;
+import hanghae.infrastructure.common.functional.DistributedLockFunction;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,16 +25,17 @@ public class ReservationServiceImpl implements ReservationService {
 
     private final ReservationRepository reservationRepository;
 
+    private final DistributedLockFunction distributedLockFunction;
+
     public static final int MAX_SEATS_PER_RESERVATION = 5;
 
-    @Override
     @Transactional
     @DistributedLock(
             key = "#{#request.scheduleId}",
             waitSeconds = 1,
             leaseSeconds = 2
     )
-    public ReservationResponse reserveSeat(ReservationRequest request) {
+    public ReservationResponse reserveSeatByAOP(ReservationRequest request) {
         Reservation reservation = initReservation(request);
         List<Seat> seats = getSeats(request);
 
@@ -47,6 +49,34 @@ public class ReservationServiceImpl implements ReservationService {
         scheduleSeats.forEach(scheduleSeat -> scheduleSeat.setReserved(true));
 
         return ReservationResponse.from(reservationRepository.reserve(reservation));
+    }
+
+    @Transactional
+    public ReservationResponse reserveSeat(ReservationRequest request) {
+        String key = "#{request.scheduleId}";
+        long waitSeconds = 1;
+        long leaseSeconds = 2;
+
+        return distributedLockFunction.executeFunctionalLock(
+                key,
+                waitSeconds,
+                leaseSeconds,
+                () -> {
+                    Reservation reservation = initReservation(request);
+                    List<Seat> seats = getSeats(request);
+
+                    List<ScheduleSeat> scheduleSeats = getScheduleSeats(request, seats);
+                    checkDoubleBooking(scheduleSeats);
+
+                    List<ReservationSeat> reservationSeats = toReservationSeats(reservation, seats);
+                    checkReservationPolicy(reservation, reservationSeats, MAX_SEATS_PER_RESERVATION);
+
+                    reservation.setReservationSeats(reservationSeats);
+                    scheduleSeats.forEach(scheduleSeat -> scheduleSeat.setReserved(true));
+
+                    return ReservationResponse.from(reservationRepository.reserve(reservation));
+                }
+        );
     }
 
     private Reservation initReservation(ReservationRequest request) {
