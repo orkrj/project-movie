@@ -2,10 +2,11 @@ package hanghae.application.service;
 
 import hanghae.application.dto.request.ReservationRequest;
 import hanghae.application.dto.response.ReservationResponse;
-import hanghae.application.port.*;
+import hanghae.application.port.ReservationService;
 import hanghae.domain.entity.*;
-import hanghae.domain.port.ReservationRepository;
+import hanghae.domain.port.*;
 import hanghae.infrastructure.common.annotation.DistributedLock;
+import hanghae.infrastructure.common.functional.DistributedLockFunction;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,21 +18,24 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ReservationServiceImpl implements ReservationService {
 
-    private final MemberService memberService;
-    private final ScheduleService scheduleService;
-    private final SeatService seatService;
-    private final ScheduleSeatService scheduleSeatService;
+    private final MemberRepository memberRepository;
+    private final ScheduleRepository scheduleRepository;
+    private final SeatRepository seatRepository;
+    private final ScheduleSeatRepository scheduleSeatRepository;
 
     private final ReservationRepository reservationRepository;
 
-    @Override
+    private final DistributedLockFunction distributedLockFunction;
+
+    public static final int MAX_SEATS_PER_RESERVATION = 5;
+
     @Transactional
     @DistributedLock(
             key = "#{#request.scheduleId}",
-            waitTime = 1, // second
-            leaseTime = 2 // second
+            waitSeconds = 1,
+            leaseSeconds = 2
     )
-    public ReservationResponse reserveSeat(ReservationRequest request) {
+    public ReservationResponse reserveSeatByAOP(ReservationRequest request) {
         Reservation reservation = initReservation(request);
         List<Seat> seats = getSeats(request);
 
@@ -39,7 +43,7 @@ public class ReservationServiceImpl implements ReservationService {
         checkDoubleBooking(scheduleSeats);
 
         List<ReservationSeat> reservationSeats = toReservationSeats(reservation, seats);
-        checkReservationPolicy(reservation, reservationSeats, 5);
+        checkReservationPolicy(reservation, reservationSeats, MAX_SEATS_PER_RESERVATION);
 
         reservation.setReservationSeats(reservationSeats);
         scheduleSeats.forEach(scheduleSeat -> scheduleSeat.setReserved(true));
@@ -47,9 +51,39 @@ public class ReservationServiceImpl implements ReservationService {
         return ReservationResponse.from(reservationRepository.reserve(reservation));
     }
 
+    @Transactional
+    public ReservationResponse reserveSeat(ReservationRequest request) {
+        String key = "#{request.scheduleId}";
+        long waitSeconds = 1;
+        long leaseSeconds = 2;
+
+        return distributedLockFunction.executeFunctionalLock(
+                key,
+                waitSeconds,
+                leaseSeconds,
+                () -> {
+                    Reservation reservation = initReservation(request);
+                    List<Seat> seats = getSeats(request);
+
+                    List<ScheduleSeat> scheduleSeats = getScheduleSeats(request, seats);
+                    checkDoubleBooking(scheduleSeats);
+
+                    List<ReservationSeat> reservationSeats = toReservationSeats(reservation, seats);
+                    checkReservationPolicy(reservation, reservationSeats, MAX_SEATS_PER_RESERVATION);
+
+                    reservation.setReservationSeats(reservationSeats);
+                    scheduleSeats.forEach(scheduleSeat -> scheduleSeat.setReserved(true));
+
+                    return ReservationResponse.from(reservationRepository.reserve(reservation));
+                }
+        );
+    }
+
     private Reservation initReservation(ReservationRequest request) {
-        Member member = memberService.findMemberById(request.memberId());
-        Schedule schedule = scheduleService.findScheduleById(request.scheduleId());
+        Member member = memberRepository.findMemberById(request.memberId())
+                .orElseThrow(() -> new IllegalArgumentException("No member found by" + request.memberId()));
+        Schedule schedule = scheduleRepository.findScheduleById(request.scheduleId())
+                .orElseThrow(() -> new IllegalArgumentException("No schedule found by" + request.scheduleId()));
 
         return Reservation.of(member, schedule);
     }
@@ -57,13 +91,15 @@ public class ReservationServiceImpl implements ReservationService {
     private List<Seat> getSeats(ReservationRequest request) {
         return request.seatNames()
                 .stream()
-                .map(seatName -> seatService.findSeatBySeatNameAndScreenId(seatName, request.screenId()))
+                .map(seatName -> seatRepository.findSeatBySeatNameAndScreenId(seatName, request.screenId())
+                        .orElseThrow(() -> new IllegalArgumentException("No seat: " + seatName)))
                 .toList();
     }
 
     private List<ScheduleSeat> getScheduleSeats(ReservationRequest request, List<Seat> seats) {
         return seats.stream()
-                .map(seat -> scheduleSeatService.findScheduleSeatByIds(request.scheduleId(), seat.getSeatId()))
+                .map(seat -> scheduleSeatRepository.findScheduleSeatByIds(request.scheduleId(), seat.getSeatId())
+                        .orElseThrow(() -> new IllegalArgumentException("No scheduleSeat: " + seat.getSeatId())))
                 .toList();
     }
 
@@ -74,9 +110,7 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     private void checkDoubleBooking(List<ScheduleSeat> scheduleSeats) {
-        if (scheduleSeats.stream().anyMatch(ScheduleSeat::isReserved)) {
-            throw new IllegalArgumentException("이미 예매된 좌석입니다.");
-        }
+        scheduleSeats.forEach(ScheduleSeat::checkDoubleBooking);
     }
 
     private void checkReservationPolicy(Reservation reservation, List<ReservationSeat> reservationSeats, int limit) {

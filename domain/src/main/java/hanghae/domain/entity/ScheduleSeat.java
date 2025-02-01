@@ -36,4 +36,10 @@ public class ScheduleSeat {
         this.seat = seat;
         this.reserved = false;
     }
+
+    public void checkDoubleBooking() {
+        if (this.reserved) {
+            throw new IllegalArgumentException("이미 예매된 좌석입니다.");
+        }
+    }
 }
