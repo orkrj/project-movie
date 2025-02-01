@@ -2,9 +2,9 @@ package hanghae.application.service;
 
 import hanghae.application.dto.request.ReservationRequest;
 import hanghae.application.dto.response.ReservationResponse;
-import hanghae.application.port.*;
+import hanghae.application.port.ReservationService;
 import hanghae.domain.entity.*;
-import hanghae.domain.port.ReservationRepository;
+import hanghae.domain.port.*;
 import hanghae.infrastructure.common.annotation.DistributedLock;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -17,10 +17,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ReservationServiceImpl implements ReservationService {
 
-    private final MemberService memberService;
-    private final ScheduleService scheduleService;
-    private final SeatService seatService;
-    private final ScheduleSeatService scheduleSeatService;
+    private final MemberRepository memberRepository;
+    private final ScheduleRepository scheduleRepository;
+    private final SeatRepository seatRepository;
+    private final ScheduleSeatRepository scheduleSeatRepository;
 
     private final ReservationRepository reservationRepository;
 
@@ -50,8 +50,10 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     private Reservation initReservation(ReservationRequest request) {
-        Member member = memberService.findMemberById(request.memberId());
-        Schedule schedule = scheduleService.findScheduleById(request.scheduleId());
+        Member member = memberRepository.findMemberById(request.memberId())
+                .orElseThrow(() -> new IllegalArgumentException("No member found by" + request.memberId()));
+        Schedule schedule = scheduleRepository.findScheduleById(request.scheduleId())
+                .orElseThrow(() -> new IllegalArgumentException("No schedule found by" + request.scheduleId()));
 
         return Reservation.of(member, schedule);
     }
@@ -59,13 +61,15 @@ public class ReservationServiceImpl implements ReservationService {
     private List<Seat> getSeats(ReservationRequest request) {
         return request.seatNames()
                 .stream()
-                .map(seatName -> seatService.findSeatBySeatNameAndScreenId(seatName, request.screenId()))
+                .map(seatName -> seatRepository.findSeatBySeatNameAndScreenId(seatName, request.screenId())
+                        .orElseThrow(() -> new IllegalArgumentException("No seat: " + seatName)))
                 .toList();
     }
 
     private List<ScheduleSeat> getScheduleSeats(ReservationRequest request, List<Seat> seats) {
         return seats.stream()
-                .map(seat -> scheduleSeatService.findScheduleSeatByIds(request.scheduleId(), seat.getSeatId()))
+                .map(seat -> scheduleSeatRepository.findScheduleSeatByIds(request.scheduleId(), seat.getSeatId())
+                        .orElseThrow(() -> new IllegalArgumentException("No scheduleSeat: " + seat.getSeatId())))
                 .toList();
     }
 
