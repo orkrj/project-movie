@@ -30,7 +30,9 @@ public class DistributedLockAspect {
             try {
                 return point.proceed();
             } finally {
-                lock.unlock();
+                if (lock.isHeldByCurrentThread()) {
+                    lock.unlock();
+                }
             }
         } else {
             throw new IllegalArgumentException("Failed to acquire lock: " + key);
