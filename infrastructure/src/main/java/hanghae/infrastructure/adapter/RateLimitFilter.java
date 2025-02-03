@@ -59,8 +59,8 @@ public class RateLimitFilter implements Filter {
     }
 
     private void setRemainBlockedTime(HttpServletResponse response, String clientIp) throws IOException {
-        long ttl = getBlockedMap().remainTimeToLive(clientIp);
-        response.getWriter().write("\nRemaining blocked time: " + ttl);
+        long ttl = getBlockedMap().remainTimeToLive(clientIp) / 1000;
+        response.getWriter().write("\nRemaining blocked time: " + ttl + "s");
     }
 
     private String getClientIp(HttpServletRequest request) {
