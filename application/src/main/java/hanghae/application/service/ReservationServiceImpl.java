@@ -37,7 +37,7 @@ public class ReservationServiceImpl implements ReservationService {
     @DistributedLock(
             key = "#{#request.scheduleId}",
             waitSeconds = 1,
-            leaseSeconds = 2
+            leaseSeconds = 3
     )
     public ReservationResponse reserveSeat(ReservationRequest request) {
         Reservation reservation = initReservation(request);
@@ -62,7 +62,7 @@ public class ReservationServiceImpl implements ReservationService {
     public ReservationResponse reserveSeatWithLamda(ReservationRequest request) {
         String key = "#{request.scheduleId}";
         long waitSeconds = 1;
-        long leaseSeconds = 2;
+        long leaseSeconds = 3;
 
         return distributedLockFunction.executeFunctionalLock(
                 key,
