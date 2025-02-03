@@ -21,7 +21,7 @@ public class MovieServiceImpl implements MovieService {
     @Override
     @Cacheable(
             cacheNames = "findMoviesPlaying",
-            key = "'findMoviesPlaying' + (#title ?: '') + ':' + (#genre ?: '')"
+            key = "(#title ?: '') + ':' + (#genre ?: '')"
     )
     public List<MoviePlayingResponse> findMoviesPlayingWithFilters(String title, Genre genre) {
         List<MovieScheduleScreenDto> movieScheduleScreenDtoList =
