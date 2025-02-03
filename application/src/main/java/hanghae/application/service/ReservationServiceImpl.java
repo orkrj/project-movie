@@ -2,6 +2,7 @@ package hanghae.application.service;
 
 import hanghae.application.dto.request.ReservationRequest;
 import hanghae.application.dto.response.ReservationResponse;
+import hanghae.domain.port.ReservationRateLimitChecker;
 import hanghae.application.port.ReservationService;
 import hanghae.domain.entity.*;
 import hanghae.domain.port.*;
@@ -27,6 +28,9 @@ public class ReservationServiceImpl implements ReservationService {
 
     private final DistributedLockFunction distributedLockFunction;
 
+    private final ReservationRateLimitChecker reservationRateLimitChecker;
+
+
     public static final int MAX_SEATS_PER_RESERVATION = 5;
 
     @Transactional
@@ -48,7 +52,10 @@ public class ReservationServiceImpl implements ReservationService {
         reservation.setReservationSeats(reservationSeats);
         scheduleSeats.forEach(scheduleSeat -> scheduleSeat.setReserved(true));
 
-        return ReservationResponse.from(reservationRepository.reserve(reservation));
+        Reservation reservationResult = reservationRepository.reserve(reservation);
+        checkReservationRateLimit(request);
+
+        return ReservationResponse.from(reservationResult);
     }
 
     @Transactional
@@ -94,6 +101,12 @@ public class ReservationServiceImpl implements ReservationService {
                 .map(seatName -> seatRepository.findSeatBySeatNameAndScreenId(seatName, request.screenId())
                         .orElseThrow(() -> new IllegalArgumentException("No seat: " + seatName)))
                 .toList();
+    }
+
+    private void checkReservationRateLimit(ReservationRequest request) {
+        String key = request.memberId() + ":" + request.scheduleId();
+
+        reservationRateLimitChecker.oneReservationPerFiveMinutes(key);
     }
 
     private List<ScheduleSeat> getScheduleSeats(ReservationRequest request, List<Seat> seats) {
