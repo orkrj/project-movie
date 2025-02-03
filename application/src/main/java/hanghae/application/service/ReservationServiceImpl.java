@@ -35,7 +35,7 @@ public class ReservationServiceImpl implements ReservationService {
             waitSeconds = 1,
             leaseSeconds = 2
     )
-    public ReservationResponse reserveSeatByAOP(ReservationRequest request) {
+    public ReservationResponse reserveSeat(ReservationRequest request) {
         Reservation reservation = initReservation(request);
         List<Seat> seats = getSeats(request);
 
@@ -52,7 +52,7 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Transactional
-    public ReservationResponse reserveSeat(ReservationRequest request) {
+    public ReservationResponse reserveSeatWithLamda(ReservationRequest request) {
         String key = "#{request.scheduleId}";
         long waitSeconds = 1;
         long leaseSeconds = 2;
